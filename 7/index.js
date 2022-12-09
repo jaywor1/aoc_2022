@@ -1,29 +1,13 @@
-function solution1(input) {
+const fs = require("fs");
+const aoc = require("aoc_testing");
 
-    let sol = getSol(input);
-    let realSolution = 0;
+const input = fs.readFileSync("input.txt").toString();
 
-    for (let i = 0; i < sol.length; i++) {
-        if (sol[i].bytes < 100000)
-            realSolution += sol[i].bytes;
-    }
-
-    return realSolution;
-}
-
-function solution2(input) {
-    let sol = getSol(input);
-    let lowest = { id: -1, bytes: 999999999999, name: "" };
-    let updateSize = (30000000) - (70000000 - sol[0].bytes);
-    for (let i = 0; i < sol.length; i++) {
-        if (sol[i].bytes > updateSize && sol[i].bytes < lowest.bytes)
-            lowest = sol[i];
-    }
-    return lowest.bytes;
-}
+aoc.logSolution(input, solution1, solution2);
+aoc.checkTime(input, solution1, solution2);
 
 function getSol(input) {
-    let lines = input.split('\n');
+    let lines = aoc.crlfBullshit(input.split('\n'));
 
     let directories = [];
     let sol = [];
@@ -58,4 +42,28 @@ function getSol(input) {
         }
     }
     return sol;
+}
+
+function solution1(input) {
+
+    let sol = getSol(input);
+    let realSolution = 0;
+
+    for (let i = 0; i < sol.length; i++) {
+        if (sol[i].bytes < 100000)
+            realSolution += sol[i].bytes;
+    }
+
+    return realSolution;
+}
+
+function solution2(input) {
+    let sol = getSol(input);
+    let lowest = { id: -1, bytes: 999999999999, name: "" };
+    let updateSize = (30000000) - (70000000 - sol[0].bytes);
+    for (let i = 0; i < sol.length; i++) {
+        if (sol[i].bytes > updateSize && sol[i].bytes < lowest.bytes)
+            lowest = sol[i];
+    }
+    return lowest.bytes;
 }
