@@ -1,3 +1,11 @@
+const fs = require("fs");
+const aoc = require("aoc_testing");
+
+const input = fs.readFileSync("input.txt").toString();
+
+aoc.logSolution(input, solution1, solution2);
+aoc.checkTime(input, solution1, solution2);
+
 function addScore(s) {
     if (s == s.toLowerCase()) {
         return s.charCodeAt(0) - 96;
@@ -8,7 +16,7 @@ function addScore(s) {
 }
 
 function solution1(input) {
-    const lines = input.split('\n');
+    const lines = aoc.crlfBullshit(input.split('\n'));
     let sol = 0;
     for (let z = 0; z < lines.length; z++) {
         for (let i = 0; i < lines[z].length / 2; i++) {
@@ -28,7 +36,7 @@ function solution1(input) {
     return sol;
 }
 function solution2(input) {
-    const lines = input.split('\n');
+    const lines = aoc.crlfBullshit(input.split('\n'));
     let sol = 0;
 
     for (let k = 0; k < lines.length; k += 3) {
