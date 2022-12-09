@@ -1,7 +1,15 @@
+const fs = require("fs");
+const aoc = require("aoc_testing");
+
+const input = fs.readFileSync("input.txt").toString();
+
+aoc.logSolution(input, solution1, solution2);
+aoc.checkTime(input, solution1, solution2);
+
 function solution1(input) {
     let score = 0;
-    const lines = input.split('\n');
-    for (let i = 0; i < lines.length - 1; i++) {
+    const lines = aoc.crlfBullshit(input.split('\n'));
+    for (let i = 0; i < lines.length; i++) {
         let current = lines[i].split(' ');
         score += current[1].charCodeAt(0) - 87;
         if (current[0].charCodeAt(0) - 64 == current[1].charCodeAt(0) - 87) {
@@ -27,7 +35,7 @@ function solution1(input) {
 
 function solution2(input) {
     let score = 0;
-    const lines = input.split('\n');
+    const lines = aoc.crlfBullshit(input.split('\n'));
     for (let i = 0; i < lines.length; i++) {
         let current = lines[i].split(' ');
         switch (current[1]) {
