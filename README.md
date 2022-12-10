@@ -1,5 +1,17 @@
 # aoc_2022
 
+## Modules i use throughout the Advent of Code
+
+### fs
+ - for reading input.txt file
+ - ```npm install fs```
+### aoc_testing
+ - for testing and optimizing
+ - https://github.com/jaywor1/aoc_testing
+ - ```npm install aoc_testing```
+ 
+## My results
+
 | Exercise   |      Time of 1000 runs of function solution 1      |  Time of 1000 runs of function solution 2 |
 |:----------:|:------------------------------------------------:|:---------------------------------------:|
 | 1 | 196 ms | 201 ms |
