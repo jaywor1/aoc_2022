@@ -83,58 +83,82 @@ Test: divisible by 7
   If false: throw to monkey 5
 `;
 
-let monkeys = handleInput(plsWork);
+console.log(solution1(plsWork));
 
-let saviour = 1;
-
-for (let i = 0; i < monkeys.length; i++) {
-    saviour = saviour * monkeys[i].test;
+function findSaviour(monkeys){
+  let saviour = 1;
+  for (let i = 0; i < monkeys.length; i++) {
+      saviour = saviour * monkeys[i].test;
+  }
+  return saviour;
 }
 
-let rounds = 10000;
-
-for (let round = 0; round < rounds; round++) {
-    for (let i = 0; i < monkeys.length; i++) {
-        let monkeLen = monkeys[i].items.length;
-        monkeys[i].inspected += monkeLen;
-        for (let y = 0; y < monkeLen; y++) {
-            let eq = monkeys[i].operation;
+function inspect(monkeys,saviour,worry = 3){
+  for (let i = 0; i < monkeys.length; i++) {
+    let monkeLen = monkeys[i].items.length;
+    monkeys[i].inspected += monkeLen;
+    for (let y = 0; y < monkeLen; y++) {
+        let eq = monkeys[i].operation;
+        eq = eq.replace("old", monkeys[i].items[0]);
+        while (eq.includes("old")) {
             eq = eq.replace("old", monkeys[i].items[0]);
-            while (eq.includes("old")) {
-                eq = eq.replace("old", monkeys[i].items[0]);
-            }
-            eq = eq.split(' ');
-
-            switch (eq[1]) {
-                case '+':
-                    monkeys[i].items[0] = Number(eq[0]) + Number(eq[2]);
-                    break;
-                case '*':
-                    monkeys[i].items[0] = Number(eq[0]) * Number(eq[2]);
-                    break;
-            }
-
-            //monkeys[i].items[0] = Math.floor(monkeys[i].items[0] / 3);
-
-            if (monkeys[i].items[0] > saviour) {
-                monkeys[i].items[0] = monkeys[i].items[0] % saviour;
-            }
-            //if (monkeys[i].items[0] % saviour == 0)
-            //    monkeys[i].items[0] = saviour;
-
-            if (monkeys[i].items[0] % monkeys[i].test == 0) {
-                monkeys[monkeys[i].yesCond].items.push(monkeys[i].items[0]);
-            }
-            else {
-                monkeys[monkeys[i].noCond].items.push(monkeys[i].items[0]);
-            }
-            monkeys[i].items.shift(0);
         }
-    }
-}
-for (let i = 0; i < monkeys.length; i++) {
-    console.log(monkeys[i].inspected);
+        eq = eq.split(' ');
 
+        switch (eq[1]) {
+            case '+':
+                monkeys[i].items[0] = Number(eq[0]) + Number(eq[2]);
+                break;
+            case '*':
+                monkeys[i].items[0] = Number(eq[0]) * Number(eq[2]);
+                break;
+        }
+
+        monkeys[i].items[0] = Math.floor(monkeys[i].items[0] / worry);
+
+        if (monkeys[i].items[0] > saviour) {
+            monkeys[i].items[0] = monkeys[i].items[0] % saviour;
+        }
+        //if (monkeys[i].items[0] % saviour == 0)
+        //    monkeys[i].items[0] = saviour;
+
+        if (monkeys[i].items[0] % monkeys[i].test == 0) {
+            monkeys[monkeys[i].yesCond].items.push(monkeys[i].items[0]);
+        }
+        else {
+            monkeys[monkeys[i].noCond].items.push(monkeys[i].items[0]);
+        }
+        monkeys[i].items.shift(0);
+    }
+  }
+  return monkeys;
+}
+
+
+function solution1(input){
+  let monkeys = handleInput(input);
+  let saviour = findSaviour(monkeys);
+
+  for (let round = 0; round < 10000; round++) {
+      monkeys = inspect(monkeys,saviour,1);
+  }
+
+  return findActiveMonke(monkeys);
+}
+
+
+function findActiveMonke(monkeys) {
+  let activeMonkeA = 0, activeMonkeB = 0;
+  for (let i = 0; i < monkeys.length; i++) {
+      if (activeMonkeA < monkeys[i].inspected) {
+          activeMonkeB = activeMonkeA;
+          activeMonkeA = monkeys[i].inspected;
+      }
+      else if (activeMonkeB < monkeys[i].inspected) {
+          activeMonkeB = monkeys[i].inspected;
+      }
+  }
+  return activeMonkeA * activeMonkeB;
 }
 
 // 21084491736 is too high
