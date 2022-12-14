@@ -20,7 +20,23 @@ function charArrToNums(arr) {
     return numArr;
 }
 function solution1(input) {
-    numArr = handleInput(input);
+    let numArr = handleInput(input);
+    let currentPath = {visitedNodes: [[0,0]],isFinished: false,currentNode: [0,0],inTarget: false};
+    let paths = [currentPath];
+
+    while(!checkFinished(paths)){
+                
+    }
+
+
+}
+function checkFinished(paths){
+    for(i in paths){
+        if(paths[i].isFinished == false){
+            return false;
+        }
+    }
+    return true;
 }
 
 
