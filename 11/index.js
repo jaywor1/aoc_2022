@@ -1,37 +1,11 @@
-const test = `Monkey 0:
-Starting items: 79, 98
-Operation: new = old * 19
-Test: divisible by 23
-  If true: throw to monkey 2
-  If false: throw to monkey 3
+const fs = require("fs");
+const aoc = require("aoc_testing");
 
-Monkey 1:
-Starting items: 54, 65, 75, 74
-Operation: new = old + 6
-Test: divisible by 19
-  If true: throw to monkey 2
-  If false: throw to monkey 0
+const input = fs.readFileSync("input.txt").toString();
 
-Monkey 2:
-Starting items: 79, 60, 97
-Operation: new = old * old
-Test: divisible by 13
-  If true: throw to monkey 1
-  If false: throw to monkey 3
+aoc.checkTime(input, solution1, solution2);
 
-Monkey 3:
-Starting items: 74
-Operation: new = old + 3
-Test: divisible by 17
-  If true: throw to monkey 0
-  If false: throw to monkey 1
-`;
-
-handleInput(test);
-
-console.log(solution1(test));
-console.log(solution2(test));
-
+console.log(performance.now);
 
 function handleInput(input) {
     const lines = input.split('\n');
@@ -44,9 +18,8 @@ function handleInput(input) {
     let items = [];
     for (let i = 0; i < lines.length; i++) {
         let splited = lines[i].split(' ');
-        switch (lines[i][0]) {
-            case 'M':
-                // ! BAD PRACITCE
+        switch (lines[i][2]) {
+            case 'n':
                 id = Number(lines[i].split(' ')[1].substr(0, 1));
                 break;
             case 'S':
@@ -61,8 +34,8 @@ function handleInput(input) {
                 break;
             case 'T':
                 let test = Number(lines[i].split(': ')[1].split(' ')[2]);
-                let yesCond = Number(lines[i + 1].split(' ')[7]);
-                let noCond = Number(lines[i + 2].split(' ')[7]);
+                let yesCond = Number(lines[i + 1].split(' ')[9]);
+                let noCond = Number(lines[i + 2].split(' ')[9]);
                 monkeys.push({ id: id, items: items, operation: operation, test: test, yesCond: yesCond, noCond: noCond, inspected: 0 });
                 items = [];
                 i = i + 3;
@@ -71,8 +44,7 @@ function handleInput(input) {
     }
     return monkeys;
 }
-
-function inspect(monke, monkeys, worryReduction = 3) {
+function inspect(monke, monkeys, saviour = Number.MAX_VALUE, worryReduction = 3) {
     monke.inspected++;
     let currentItem = Number(monke.items[0]);
     let equation = monke.operation.replace("old", currentItem);
@@ -89,7 +61,10 @@ function inspect(monke, monkeys, worryReduction = 3) {
             currentItem = Number(equation[0]) + Number(equation[2]);
             break;
     }
-    currentItem = Math.floor(currentItem / 3);
+    currentItem = Math.floor(currentItem / worryReduction);
+    if (currentItem > saviour) {
+        currentItem = currentItem % saviour;
+    }
     if (currentItem % monke.test == 0) {
         monkeys.find(x => x.id == monke.yesCond).items.push(currentItem);
     }
@@ -101,8 +76,6 @@ function inspect(monke, monkeys, worryReduction = 3) {
     return monkeys;
 
 }
-
-
 function findActiveMonke(monkeys) {
     let activeMonkeA = 0, activeMonkeB = 0;
     for (let i = 0; i < monkeys.length; i++) {
@@ -116,14 +89,20 @@ function findActiveMonke(monkeys) {
     }
     return activeMonkeA * activeMonkeB;
 }
-
+function findSaviour(monkeys) {
+    let saviour = 1;
+    for (let i = 0; i < monkeys.length; i++) {
+        saviour = saviour * monkeys[i].test;
+    }
+    return saviour;
+}
 function solution1(input) {
     let monkeys = handleInput(input);
     for (let round = 0; round < 20; round++) {
         for (let i = 0; i < monkeys.length; i++) {
             let currentLength = monkeys[i].items.length;
             for (let y = 0; y < currentLength; y++) {
-                monkeys = inspect(monkeys[i], monkeys, 1);
+                monkeys = inspect(monkeys[i], monkeys, Number.MAX_VALUE, 3);
             }
         }
     }
@@ -131,13 +110,14 @@ function solution1(input) {
 }
 function solution2(input) {
     let monkeys = handleInput(input);
-    for (let round = 0; round < 1; round++) {
+    let saviour = findSaviour(monkeys);
+    for (let round = 0; round < 10000; round++) {
         for (let i = 0; i < monkeys.length; i++) {
             let currentLength = monkeys[i].items.length;
             for (let y = 0; y < currentLength; y++) {
-                monkeys = inspect(monkeys[i], monkeys);
+                monkeys = inspect(monkeys[i], monkeys, saviour, 1);
             }
         }
     }
-    return monkeys;
+    return findActiveMonke(monkeys);
 }
